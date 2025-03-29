@@ -7,11 +7,11 @@ private let commandsNotExpectingPaths: Set<String> = [
     "baseline",
     "reporters",
     "rules",
-    "version",
+    "version"
 ]
 
 private let commandsWithoutCachPathOption: Set<String> = commandsNotExpectingPaths.union([
-    "analyze",
+    "analyze"
 ])
 
 @main
@@ -23,13 +23,13 @@ struct SwiftLintCommandPlugin: CommandPlugin {
 
 #if canImport(XcodeProjectPlugin)
 
-import XcodeProjectPlugin
+    import XcodeProjectPlugin
 
-extension SwiftLintCommandPlugin: XcodeCommandPlugin {
-    func performCommand(context: XcodePluginContext, arguments: [String]) throws {
-        try lintFiles(context: context, arguments: arguments)
+    extension SwiftLintCommandPlugin: XcodeCommandPlugin {
+        func performCommand(context: XcodePluginContext, arguments: [String]) throws {
+            try lintFiles(context: context, arguments: arguments)
+        }
     }
-}
 
 #endif
 
@@ -61,13 +61,15 @@ extension SwiftLintCommandPlugin {
         }
     }
 
-    private func lintFiles(in paths: [String] = ["."],
-                           for targetName: String? = nil,
-                           with context: some CommandContext,
-                           arguments: [String]) throws {
+    private func lintFiles(
+        in paths: [String] = ["."],
+        for targetName: String? = nil,
+        with context: some CommandContext,
+        arguments: [String]
+    ) throws {
         let process = Process()
         process.currentDirectoryURL = URL(fileURLWithPath: context.workingDirectory)
-        process.executableURL = URL(fileURLWithPath: try context.tool)
+        process.executableURL = try URL(fileURLWithPath: context.tool)
         process.arguments = arguments
         if commandsWithoutCachPathOption.isDisjoint(with: arguments) {
             process.arguments! += ["--cache-path", context.cacheDirectory]

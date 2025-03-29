@@ -54,39 +54,39 @@ extension PluginContext: CommandContext {
 
 #if canImport(XcodeProjectPlugin)
 
-import XcodeProjectPlugin
+    import XcodeProjectPlugin
 
-extension XcodePluginContext: CommandContext {
-    var tool: String {
-        get throws {
-            try tool(named: "swiftlint").path.string
+    extension XcodePluginContext: CommandContext {
+        var tool: String {
+            get throws {
+                try tool(named: "swiftlint").path.string
+            }
+        }
+
+        var cacheDirectory: String {
+            pluginWorkDirectory.string
+        }
+
+        var workingDirectory: String {
+            xcodeProject.directory.string
+        }
+
+        var unitName: String {
+            "project"
+        }
+
+        var subUnitName: String {
+            "target"
+        }
+
+        func targets(named names: [String]) throws -> [(paths: [String], name: String)] {
+            if names.isEmpty {
+                return [(paths: [xcodeProject.directory.string], name: xcodeProject.displayName)]
+            }
+            return xcodeProject.targets
+                .filter { names.contains($0.displayName) }
+                .map { (paths: $0.inputFiles.map(\.path.string).filter { $0.hasSuffix(".swift") }, name: $0.displayName) }
         }
     }
-
-    var cacheDirectory: String {
-        pluginWorkDirectory.string
-    }
-
-    var workingDirectory: String {
-        xcodeProject.directory.string
-    }
-
-    var unitName: String {
-        "project"
-    }
-
-    var subUnitName: String {
-        "target"
-    }
-
-    func targets(named names: [String]) throws -> [(paths: [String], name: String)] {
-        if names.isEmpty {
-            return [(paths: [xcodeProject.directory.string], name: xcodeProject.displayName)]
-        }
-        return xcodeProject.targets
-            .filter { names.contains($0.displayName) }
-            .map { (paths: $0.inputFiles.map(\.path.string).filter { $0.hasSuffix(".swift") }, name: $0.displayName) }
-    }
-}
 
 #endif

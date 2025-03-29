@@ -25,7 +25,7 @@ let package = Package(
                 permissions: [
                     .writeToPackageDirectory(
                         reason: "When this command is run with the `--fix` option it may modify source files."
-                    ),
+                    )
                 ]
             ),
             dependencies: [.target(name: "SwiftLintBinary")],
